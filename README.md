@@ -1,30 +1,64 @@
-# Flask-Files-Server
-## 一、简介
-&emsp;&emsp;基于原生前端和 Python Flask 后端的文件服务器，可远程访问、下载和上传文件，可用于某一设备向其他设备开放的文件访问。局域网搭配内网穿透可实现公网访问。<br>
-&emsp;&emsp;（2023.04.09 更新：本项目仅推荐在 windows 环境下使用。读取硬盘分区的代码不是跨平台的，在其他系统可能出现未知问题。另外，本项目我没有继续更新的意愿，但如果你遇到了 bug 或者提交 pull requests，我会第一时间响应）
+# Flask 文件共享
 
+## 简介
 
-## 二、说明
-&emsp;&emsp;最开始是想着，实现电脑不在身边的时候直接访问、操作电脑文件。等到做完了才想起来用 ftp 协议配置也更方便，也更稳定；但既然都做完了(；′⌒`)...也就权当一个练手项目吧。<br>
-&emsp;&emsp;使用 http 实现确实麻烦了，但正好也能用最近学的前端知识做一做交互界面。使用 Windows 自带的 ftp 服务或网上的其他 ftp 客户端 UI 也就那样，自己从零设计 ftp 服务客户端又太麻烦了，选择前端 http 实现正好可以满足 UI 这个需求。<br>
-&emsp;&emsp;同时不同设备访问只需要浏览器就可以了。~~当然移动端体验可能不太好，因为我没做移动端网页（懒），但是用还是能用的...~~ （2021.09.15 更新：增加了移动端适配，移动端使用体验大幅提升）
+基于原生 JavaScript 前端和 Python Flask 后端的文件服务器。
 
-## 三、功能
-&emsp;&emsp;（1）~~炫酷、人性化使用界面，赏心悦目（划掉）~~<br><br>
-&emsp;&emsp;（2）类似 ftp 服务的文件访问、下载和上传功能，没有删除（没这个需求）
+## 功能
 
-## 四、使用
-&emsp;&emsp;（1）安装依赖：
-```cmd
-pip install flask
+- [x] 目录浏览
+- [x] 文件下载
+- [x] HTML5 移动端适配
+
+## 使用方法
+
+### 获取项目
+
+```shell
+# HTTPS 仓库地址
+git clone --progress https://github.com/Dragon1573/Flask-Files-Server.git
+# SSH 仓库地址
+git clone --progress git@github.com:Dragon1573/Flask-Files-Server.git
+
+# 初始化虚拟环境
+cd Flask-Files-Server/
+python -m venv .venv
+
+# 激活虚拟环境（Powershell）
+& ./.venv/Scripts/Activate.ps1
+
+# 安装必要的依赖项
+python -m pip install -U flask
 ```
-&emsp;&emsp;（2）[app.py](https://github.com/AiCorein/Flask-Files-Server/blob/main/app.py) 中设置 SECRET_KEY 值,关于该值 flask 官方的说明：
->&emsp;&emsp;SECRET_KEY 配置变量是通用密钥，可在 Flask 和多个第三方扩展中使用，如其名所示，加密的强度取决于变量值的随机密度。<br>
->&emsp;&emsp;不同的程序要使用不同的密钥，而且要保证其他人不知道你所用的字符串，其主要作用应该是在各种加密过程中加盐以增加安全性。在实际应用中最好将这个参数存储为系统环境变量。
 
-&emsp;&emsp;&emsp;&emsp;建议通过随机方法获取值，采用系统变量方式存储，然后使用 `os.getenv('SECRET_KEY')` 读取<br><br>
-&emsp;&emsp;（3）定义登录用户名和密码：给 [app.py](https://github.com/AiCorein/Flask-Files-Server/blob/main/app.py) 中的 `SPECIFY_UNAME` `SPECIFY_UPWD` 常量赋值<br><br>
-&emsp;&emsp;（4）运行 [app.py](https://github.com/AiCorein/Flask-Files-Server/blob/main/app.py)
+### 配置项目
 
-## 五、演示
-[点击前往演示视频](https://www.bilibili.com/video/BV15K4y1g7Yo?share_source=copy_web)
+在测试环境下，创建 `.env` 配置文件并添加如下内容，你应当使用「密码学安全的随机数生成器」（Cryptography-safety RNG）产生足够强度的服务器根密钥。
+
+```dotenv
+SECRET_KEY = "50me_raNdOM1y_9eneraTed_t0keN"
+```
+
+> [!CAUTION]
+>
+> 在生产环境下，你应当将其配置到环境变量中，而非使用 `.env` 文件提供临时环境变量！
+
+### 帮助文档
+
+```text
+usage: app.py [-h] [-d DIRECTORY] -p PORT
+
+options:
+  -h, --help            show this help message and exit
+  -d DIRECTORY, --directory DIRECTORY
+                        指定项目根目录
+  -p PORT, --port PORT  指定服务器端口
+```
+
+## 部署
+
+本项目可借助 *CGI* （比如 [`wfastcgi`](https://pypi.org/project/wfastcgi/) 或 [`waitress`](https://pypi.org/project/waitress/) ）与常见的 Web 服务器进行集成，但更推荐使用 [`HttpPlatformHandler`](https://www.iis.net/downloads/microsoft/httpplatformhandler) 与 [Windows IIS](https://www.iis.net/) 集成。
+
+> [!TIP]
+>
+> 你可以参考 [为 Python Web 应用配置 IIS](https://learn.microsoft.com/zh-cn/visualstudio/python/configure-web-apps-for-iis-windows?view=vs-2022) 。

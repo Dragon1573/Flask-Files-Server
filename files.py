@@ -1,10 +1,6 @@
-from driver import get_winDriver
 import os
 import time
 
-
-DEFAULT_PATH = 'D:/'
-DRIVERS_LIST = get_winDriver()
 current_path = ''
 
 
@@ -12,6 +8,10 @@ current_path = ''
 def get_files_data(path):
     """
     获取指定路径下的所有文件、文件夹的信息
+
+    Example:
+        >>> get_files_data("C:/")
+        ...
     """
     global current_path
     files = []
@@ -64,7 +64,3 @@ def file_size_fomat(size, the_type):
 
 def get_current_path():
     return current_path
-
-
-if __name__ == '__main__':
-    text = get_files_data('E:/')
